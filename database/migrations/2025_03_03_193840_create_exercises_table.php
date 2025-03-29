@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('exercises', function (Blueprint $table) {
             $table->id();
+            $table->string('body_part');
             $table->string('name');
-            $table->double('met_coefficient');
-            $table->string('category'); // Stored as a string, used as an Enum in the code
+            $table->string('gif_url');
+            $table->string('muscle_target');
+            $table->mediumText('instructions');
             $table->timestamps();
         });
     }

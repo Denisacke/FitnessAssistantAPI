@@ -3,7 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Enums\ActivityLevel;
+use App\Http\Enums\Sex;
+use App\Http\Requests\UserRegisterForm;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -16,35 +23,30 @@ class UserController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UserRegisterForm $userRegisterForm): JsonResponse
     {
-        //
+        $userData = $userRegisterForm->validated();
+
+        User::create([
+            ...$userData,
+            'sex' => Sex::from($userData['sex']),
+            'activity_level' => ActivityLevel::from($userData['activity_level']),
+            'password' => Hash::make($userData['password'])
+        ]);
+
+        return response()->json(['success' => true]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): JsonResponse
     {
-        //
-    }
+        $user = User::findOrFail($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
+        return response()->json(['user' => $user]);
     }
 
     /**
