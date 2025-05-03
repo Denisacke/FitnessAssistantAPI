@@ -28,8 +28,10 @@ class UserRegisterForm extends FormRequest
             'repeat_password' => ['required', 'same:password'],
             'sex' => ['required'],
             'weight' => ['required', 'numeric'],
+            'height' => ['required', 'numeric'],
             'age' => ['required', 'integer'],
-            'activity_level' => ['required']
+            'activity_level' => ['required'],
+            'body_fat' => ['sometimes']
         ];
     }
 }

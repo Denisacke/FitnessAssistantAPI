@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Enums\ActivityLevel;
 use App\Http\Enums\Sex;
 use App\Http\Requests\UserRegisterForm;
+use App\Http\Services\UserService;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,14 +29,19 @@ class UserController extends Controller
     public function store(UserRegisterForm $userRegisterForm): JsonResponse
     {
         $userData = $userRegisterForm->validated();
-
-        User::create([
+        $user = new User([
             ...$userData,
             'sex' => Sex::from($userData['sex']),
             'activity_level' => ActivityLevel::from($userData['activity_level']),
             'password' => Hash::make($userData['password'])
         ]);
 
+        $user->recommended_water_intake = UserService::calculateRecommendedWaterIntake($user);
+        $user->recommended_calories = UserService::calculateRecommendedCalories($user);
+        $user->bmi = UserService::computeBMI($user->weight, $user->height);
+
+
+        User::create($user);
         return response()->json(['success' => true]);
     }
 

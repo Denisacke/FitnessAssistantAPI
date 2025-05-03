@@ -12,9 +12,13 @@ return new class extends Migration {
             $table->string('role')->default(UserRole::REGULAR_USER);
             $table->string('sex');
             $table->double('weight');
+            $table->double('height');
             $table->integer('age');
             $table->string('activity_level');
             $table->integer('recommended_calories');
+            $table->integer('recommended_water_intake');
+            $table->integer('bmi');
+            $table->integer('body_fat')->nullable();
             $table->foreignId('trainer_id')->nullable()->constrained('users')->onDelete('set null');
         });
     }
