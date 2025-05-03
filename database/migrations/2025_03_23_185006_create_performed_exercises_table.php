@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('performed_workout_id')->constrained()->onDelete('cascade');
             $table->integer('sets');
             $table->integer('reps');
-            $table->decimal('weight', 8, 2);
+            $table->decimal('weight');
             $table->date('performed_date');
             $table->timestamps();
         });

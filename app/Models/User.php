@@ -17,7 +17,20 @@ class User extends Authenticatable implements JWTSubject
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    protected $fillable = ['name', 'email', 'password', 'sex', 'weight', 'age', 'activity_level', 'role'];
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'sex',
+        'weight',
+        'height',
+        'age',
+        'activity_level',
+        'body_fat',
+        'role',
+        'recommended_calories',
+        'recommended_water_intake'
+    ];
 
     protected $hidden = [
         'password',
@@ -31,47 +44,62 @@ class User extends Authenticatable implements JWTSubject
             'password' => 'hashed',
             'sex' => Sex::class,
             'weight' => 'double',
+            'height' => 'integer',
+            'body_fat' => 'integer',
             'age' => 'integer',
             'activity_level' => ActivityLevel::class,
             'role' => UserRole::class,
         ];
     }
 
-    protected static function boot()
-    {
-        parent::boot();
+//    protected static function boot()
+//    {
+//        parent::boot();
+//
+//        static::saving(function ($user) {
+//            $user->recommended_calories = $user->calculateRecommendedCalories();
+//            $user->bmi = $user->computeBMI();
+//        });
+//    }
 
-        static::saving(function ($user) {
-            $user->recommended_calories = $user->calculateRecommendedCalories();
-        });
-    }
-
-    public function calculateRecommendedCalories()
-    {
-        if (!$this->weight || !$this->age || !$this->activity_level) {
-            return null;
-        }
-
-        // Example Calculation using Mifflin-St Jeor Equation
-        if ($this->sex === 'male') {
-            $bmr = 10 * $this->weight + 6.25 * 175 - 5 * $this->age + 5;
-        } else {
-            $bmr = 10 * $this->weight + 6.25 * 175 - 5 * $this->age - 161;
-        }
-
-        // Activity levels: sedentary (1.2), light (1.375), moderate (1.55), active (1.725), very active (1.9)
-        $activity_multipliers = [
-            'sedentary' => 1.2,
-            'light' => 1.375,
-            'moderate' => 1.55,
-            'active' => 1.725,
-            'very_active' => 1.9
-        ];
-
-        $multiplier = $activity_multipliers[$this->activity_level->value] ?? 1.2; // Default to sedentary
-
-        return round($bmr * $multiplier);
-    }
+//    private function computeBMI(): ?float
+//    {
+//        if (!$this->weight || !$this->height) {
+//            return null;
+//        }
+//        $heightInMeters = $this->height / 100;
+//
+//        $bmi = $this->weight / ($heightInMeters ** 2);
+//
+//        return round($bmi, 1);
+//    }
+//
+//    private function calculateRecommendedCalories(): ?float
+//    {
+//        if (!$this->weight || !$this->age || !$this->activity_level) {
+//            return null;
+//        }
+//
+//        // Example Calculation using Mifflin-St Jeor Equation
+//        if ($this->sex === 'male') {
+//            $bmr = 10 * $this->weight + 6.25 * 175 - 5 * $this->age + 5;
+//        } else {
+//            $bmr = 10 * $this->weight + 6.25 * 175 - 5 * $this->age - 161;
+//        }
+//
+//        // Activity levels: sedentary (1.2), light (1.375), moderate (1.55), active (1.725), very active (1.9)
+//        $activity_multipliers = [
+//            'sedentary' => 1.2,
+//            'light' => 1.375,
+//            'moderate' => 1.55,
+//            'active' => 1.725,
+//            'very_active' => 1.9
+//        ];
+//
+//        $multiplier = $activity_multipliers[$this->activity_level->value] ?? 1.2; // Default to sedentary
+//
+//        return round($bmr * $multiplier);
+//    }
 
     /**
      * Get the identifier that will be stored in the JWT subject claim.

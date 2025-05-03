@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "78da7f092c8b4373488ce2ff4bd1afad",
+    "content-hash": "f95dcf132663dea94a2e5a8898cdd1b9",
     "packages": [
         {
             "name": "brick/math",
@@ -2145,6 +2145,82 @@
                 "source": "https://github.com/Masterminds/html5-php/tree/2.9.0"
             },
             "time": "2024-03-31T07:05:07+00:00"
+        },
+        {
+            "name": "mehdi-fathi/eloquent-filter",
+            "version": "4.5.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mehdi-fathi/eloquent-filter.git",
+                "reference": "65a9af3ad7913977c89e57c2fbbf5276092e2e66"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mehdi-fathi/eloquent-filter/zipball/65a9af3ad7913977c89e57c2fbbf5276092e2e66",
+                "reference": "65a9af3ad7913977c89e57c2fbbf5276092e2e66",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/container": "~8.0|~9.0|~10.0|~11.0|~12.0",
+                "illuminate/database": "~8.0|~9.0|~10.0|~11.0|~12.0",
+                "illuminate/pagination": "~8.0|~9.0|~10.0|~11.0|~12.0",
+                "illuminate/support": "~8.0|~9.0|~10.0|~11.0|~12.0",
+                "php": "^8.0|^8.1|^8.2|^8.3|^8.4"
+            },
+            "require-dev": {
+                "mockery/mockery": "1.4.x-dev|1.4.2|1.5.1|^1.6",
+                "orchestra/testbench": "5.*|^6.0|^6.6.0|^7.0.0|^8.0.0|v9.0.0|v10.0.0",
+                "phpstan/phpstan": "^1.8",
+                "phpunit/phpunit": "8.3|8.5|9.3|^9.5|10.5.5|^11.5.3"
+            },
+            "type": "lib",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "EloquentFilter": "eloquentFilter\\Facade\\EloquentFilter"
+                    },
+                    "providers": [
+                        "eloquentFilter\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "eloquentFilter\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mehdi Fathi",
+                    "email": "mehdifathi.developer@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Eloquent Filter adds custom filters automatically to your Eloquent Models in Laravel.It's easy to use and fully dynamic, just with sending the Query Strings to it.",
+            "homepage": "https://github.com/mehdi-fathi/eloquent-filter",
+            "keywords": [
+                "dynamic-filters",
+                "eloquent",
+                "eloquent filter",
+                "filter",
+                "laravel",
+                "laravel filter",
+                "laravel filter multiple parameters",
+                "laravel query filter",
+                "laravel tools",
+                "query",
+                "query-filter",
+                "search"
+            ],
+            "support": {
+                "issues": "https://github.com/mehdi-fathi/eloquent-filter/issues",
+                "source": "https://github.com/mehdi-fathi/eloquent-filter/tree/4.5.4"
+            },
+            "time": "2025-04-15T07:17:46+00:00"
         },
         {
             "name": "monolog/monolog",

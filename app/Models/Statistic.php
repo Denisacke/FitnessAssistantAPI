@@ -5,19 +5,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Workout extends Model
+class Statistic extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+    protected $fillable = [
+        'date',
+        'water_intake',
+        'calorie_intake',
+        'proteins',
+        'fibre',
+        'carbs',
+        'consumed_calories',
+        'user_id',
+    ];
 
-    public function exercises(): HasMany
-    {
-        return $this->hasMany(Exercise::class);
-    }
+    protected $casts = [
+        'date' => 'date',
+    ];
 
     public function user(): BelongsTo
     {

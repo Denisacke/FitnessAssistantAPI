@@ -25,7 +25,8 @@ class AuthController extends Controller
             return response()->json(['error' => 'Could not create token'], 500);
         }
 
-        return response()->json(compact('token'));
+        $user = User::where('email', $credentials['email'])->first();
+        return response()->json(['token' => $token, 'user' => $user]);
     }
 
     public function logout(): JsonResponse

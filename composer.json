@@ -9,6 +9,7 @@
         "php": "^8.2",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
+        "mehdi-fathi/eloquent-filter": "^4.5",
         "php-open-source-saver/jwt-auth": "^2.8",
         "symfony/browser-kit": "^7.2",
         "symfony/http-client": "^7.2"
