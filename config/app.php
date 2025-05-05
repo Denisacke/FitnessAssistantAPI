@@ -27,7 +27,9 @@ return [
     */
 
     'env' => env('APP_ENV', 'production'),
-
+    'alias' => [
+        'EloquentFilter' => eloquentFilter\Facade\EloquentFilter::class,
+    ],
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode

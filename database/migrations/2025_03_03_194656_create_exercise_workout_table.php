@@ -8,8 +8,10 @@ return new class extends Migration {
     {
         Schema::create('exercise_workout', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('exercise_id')->constrained()->onDelete('cascade');
-            $table->foreignId('workout_id')->constrained()->onDelete('cascade');
+            $table->integer('sets');
+            $table->integer('reps');
+            $table->foreignId('exercise_id')->constrained('exercises')->onDelete('cascade');
+            $table->foreignId('workout_id')->constrained('workouts')->onDelete('cascade');
             $table->timestamps();
         });
     }

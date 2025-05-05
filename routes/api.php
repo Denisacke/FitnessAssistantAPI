@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ConsumedProductController;
 use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
@@ -23,10 +24,10 @@ Route::group(['prefix' => 'products'], function () {
 Route::resource('workouts', WorkoutController::class);
 Route::resource('exercises', ExerciseController::class);
 Route::resource('products', ProductController::class);
+Route::resource('consumed_products', ConsumedProductController::class);
 Route::resource('users', UserController::class);
 
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register', [UserController::class, 'store']);
 Route::middleware('auth:api')->post('/logout', [AuthController::class, 'logout']);
 Route::group(['middleware' => ['auth:api']], function () {
     // Protected routes

@@ -12,12 +12,15 @@ class Workout extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'user_id', 'created_by'];
 
-    public function exercises(): HasMany
+    public function exercises(): BelongsToMany
     {
-        return $this->hasMany(Exercise::class);
+        return $this->belongsToMany(Exercise::class)
+            ->withPivot(['sets', 'reps'])
+            ->withTimestamps();
     }
+
 
     public function user(): BelongsTo
     {

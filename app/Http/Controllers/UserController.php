@@ -41,7 +41,7 @@ class UserController extends Controller
         $user->bmi = UserService::computeBMI($user->weight, $user->height);
 
 
-        User::create($user);
+        $user->save();
         return response()->json(['success' => true]);
     }
 

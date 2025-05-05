@@ -20,7 +20,6 @@ return new class extends Migration
             $table->integer('fibre');
             $table->integer('fats');
             $table->integer('carbs');
-            $table->integer('consumed_calories');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
