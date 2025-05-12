@@ -31,7 +31,8 @@ class UserRegisterForm extends FormRequest
             'height' => ['required', 'numeric'],
             'age' => ['required', 'integer'],
             'activity_level' => ['required'],
-            'body_fat' => ['sometimes']
+            'body_fat' => ['sometimes'],
+            'role' => ['sometimes'],
         ];
     }
 }

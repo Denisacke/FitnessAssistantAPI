@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Http\Enums\ActivityLevel;
 use App\Http\Enums\Sex;
 use App\Http\Enums\UserRole;
+use eloquentFilter\QueryFilter\ModelFilters\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,8 +16,8 @@ use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
-
+    use HasFactory, Notifiable, Filterable;
+    private static array $whiteListFilter = ['*'];
     protected $fillable = [
         'name',
         'email',
@@ -27,9 +28,11 @@ class User extends Authenticatable implements JWTSubject
         'age',
         'activity_level',
         'body_fat',
+        'bmi',
         'role',
         'recommended_calories',
-        'recommended_water_intake'
+        'recommended_water_intake',
+        'trainer_id',
     ];
 
     protected $hidden = [

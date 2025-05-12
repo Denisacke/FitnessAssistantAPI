@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ConsumedProductForm extends FormRequest
+class ConsumedRecipeForm extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,7 @@ class ConsumedProductForm extends FormRequest
     {
         return [
             'user_id' => 'required',
-            'product_id' => 'required',
+            'recipe_id' => 'required',
             'quantity' => 'required',
         ];
     }

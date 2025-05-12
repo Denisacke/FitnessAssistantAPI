@@ -2,16 +2,17 @@
 
 namespace App\Models;
 
+use eloquentFilter\QueryFilter\ModelFilters\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Workout extends Model
 {
-    use HasFactory;
+    use HasFactory, Filterable;
 
+    private static array $whiteListFilter = ['*'];
     protected $fillable = ['name', 'user_id', 'created_by'];
 
     public function exercises(): BelongsToMany
@@ -24,6 +25,11 @@ class Workout extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, "user_id");
+    }
+
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(User::class, "created_by");
     }
 }

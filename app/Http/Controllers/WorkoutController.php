@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\WorkoutForm;
 use App\Models\Workout;
 use Illuminate\Http\JsonResponse;
@@ -15,7 +16,26 @@ class WorkoutController extends Controller
      */
     public function index()
     {
-        //
+        $workouts = Workout::with(['exercises', 'author'])
+            ->filter()
+            ->get()
+            ->map(function ($workout) {
+                return [
+                    'workoutId' => $workout->id,
+                    'name' => $workout->name,
+                    'author' => $workout->author->name,
+                    'exercises' => $workout->exercises->map(function ($exercise) {
+                        return [
+                            'id' => $exercise->id,
+                            'name' => $exercise->name,
+                            'sets' => $exercise->pivot->sets,
+                            'reps' => $exercise->pivot->reps,
+                        ];
+                    })->toArray(),
+                ];
+            });
+
+        return response()->json(['workouts' => $workouts]);
     }
 
     /**
@@ -24,27 +44,38 @@ class WorkoutController extends Controller
     public function store(WorkoutForm $request): JsonResponse
     {
         $validated = $request->validated();
+        try {
+            $workout = DB::transaction(function () use ($validated) {
+                $workout = Workout::create([
+                    'name' => $validated['name'],
+                    'user_id' => $validated['user_id'],
+                    'created_by' => $validated['created_by']
+                ]);
 
-        $workout = Workout::create([
-            'name' => $validated['name'],
-            'user_id' => $validated['user_id'],
-            'created_by' => $validated['created_by']
-        ]);
+                $pivotData = [];
+                foreach ($validated['exercises'] as $exercise) {
+                    $pivotData[$exercise['exercise_id']] = [
+                        'sets' => $exercise['sets'],
+                        'reps' => $exercise['reps']
+                    ];
+                }
 
-        $pivotData = [];
-        foreach ($validated['exercises'] as $exercise) {
-            $pivotData[$exercise['exercise_id']] = [
-                'sets' => $exercise['sets'],
-                'reps' => $exercise['reps']
-            ];
+                $workout->exercises()->sync($pivotData);
+
+                return $workout;
+            });
+
+            return response()->json([
+                'message' => 'Workout created successfully!',
+                'workout' => $workout->load('exercises')
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Something went wrong while creating the workout.',
+                'error' => $e->getMessage()
+            ], 500);
         }
 
-        $workout->exercises()->sync($pivotData);
-
-        return response()->json([
-            'message' => 'Workout created successfully!',
-            'workout' => $workout->load('exercises')
-        ]);
     }
 
 
@@ -59,9 +90,38 @@ class WorkoutController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(WorkoutForm $request, string $id)
     {
-        //
+        Log::info('GOT HEREEEEE');
+        $validated = $request->validated();
+        Log::info('updating...');
+        try {
+            $workout = DB::transaction(function () use ($validated, $id) {
+                $workout = Workout::find($id);
+                Log::info('got to workout');
+                $pivotData = [];
+                foreach ($validated['exercises'] as $exercise) {
+                    $pivotData[$exercise['exercise_id']] = [
+                        'sets' => $exercise['sets'],
+                        'reps' => $exercise['reps']
+                    ];
+                }
+
+                $workout->exercises()->sync($pivotData);
+
+                return $workout;
+            });
+
+            return response()->json([
+                'message' => 'Workout updated successfully!',
+                'workout' => $workout->load('exercises')
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Something went wrong while updating the workout.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -69,6 +129,9 @@ class WorkoutController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $workout = Workout::findOrFail($id);
+        $workout->delete();
+
+        return ['success' => true];
     }
 }

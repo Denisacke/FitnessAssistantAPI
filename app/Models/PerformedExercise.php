@@ -10,7 +10,14 @@ class PerformedExercise extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['exercise_id', 'performed_workout_id', 'sets', 'reps', 'weight', 'performed_date'];
+    protected $fillable = [
+        'exercise_id',
+        'performed_workout_id',
+        'sets',
+        'reps',
+        'weight',
+        'performed_date'
+    ];
 
     public function exercise(): BelongsTo
     {

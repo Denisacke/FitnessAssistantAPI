@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Enums\ActivityLevel;
 use App\Http\Enums\Sex;
 use App\Http\Requests\UserRegisterForm;
 use App\Http\Services\UserService;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -20,7 +17,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(['users' => User::filter()->get()]);
     }
 
     /**
@@ -58,9 +55,26 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UserRegisterForm $request, string $id)
     {
-        //
+        $validatedData = $request->validated();
+        $userData = new User([
+            ...$validatedData,
+            'sex' => Sex::from($validatedData['sex']),
+            'activity_level' => ActivityLevel::from($validatedData['activity_level']),
+            'password' => Hash::make($validatedData['password']),
+        ]);
+
+        $userData->recommended_water_intake = UserService::calculateRecommendedWaterIntake($userData);
+        $userData->recommended_calories = UserService::calculateRecommendedCalories($userData);
+        $userData->bmi = UserService::computeBMI($userData->weight, $userData->height);
+
+        $user = User::find($id);
+        $user->update([
+            ...$userData->toArray()
+        ]);
+
+        return response()->json(['success' => true]);
     }
 
     /**
