@@ -4,11 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Http\Enums\ActivityLevel;
 use App\Http\Enums\Sex;
+use App\Http\Requests\ShareEntityForm;
 use App\Http\Requests\UserRegisterForm;
 use App\Http\Services\UserService;
+use App\Models\EntityAssignment;
+use App\Models\Recipe;
 use App\Models\User;
+use App\Models\Workout;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -40,6 +46,76 @@ class UserController extends Controller
 
         $user->save();
         return response()->json(['success' => true]);
+    }
+
+    public function shareEntity(ShareEntityForm $request)
+    {
+        $validated = $request->validated();
+        Log::debug('validated data ' . json_encode($validated));
+
+        // ✅ Check if assignment already exists
+        $alreadyAssigned = EntityAssignment::where('entity_id', $validated['entity_id'])
+            ->where('entity_type', $validated['entity_type'])
+            ->where('client_id', $validated['client_id'])
+            ->exists();
+
+        if ($alreadyAssigned) {
+            return response()->json(['message' => 'Entity already assigned to this client'], 409);
+        }
+
+        $entity = null;
+        $clientEntity = null;
+
+        if ($validated['entity_type'] == Workout::class) {
+            $entity = Workout::with('exercises')->find($validated['entity_id']);
+
+            $clientEntity = Workout::create([
+                'name' => $entity->name,
+                'created_by' => $validated['created_by'],
+                'user_id' => $validated['client_id'],
+            ]);
+
+            // Build pivot data
+            $syncData = [];
+            foreach ($entity->exercises as $exercise) {
+                $syncData[$exercise->id] = [
+                    'sets' => $exercise->pivot->sets,
+                    'reps' => $exercise->pivot->reps,
+                ];
+            }
+
+            $clientEntity->exercises()->sync($syncData);
+            Log::info('Shared workout and attached exercises.', ['workout_id' => $clientEntity->id]);
+        } else {
+            $entity = Recipe::with('products')->find($validated['entity_id']);
+
+            $clientEntity = Recipe::create([
+                'name' => $entity->name,
+                'created_by' => $validated['created_by'],
+                'user_id' => $validated['client_id'],
+            ]);
+
+            // Build pivot data for product quantities
+            $syncData = [];
+            foreach ($entity->products as $product) {
+                $syncData[$product->id] = [
+                    'quantity' => $product->pivot->quantity,
+                ];
+            }
+            $clientEntity->products()->sync($syncData);
+
+            Log::info('Shared recipe and attached products.', ['recipe_id' => $clientEntity->id]);
+        }
+
+
+        EntityAssignment::create([
+            'entity_id'   => $validated['entity_id'],
+            'entity_type' => $validated['entity_type'],
+            'trainer_id' => $validated['created_by'],
+            'client_id' => $validated['client_id'],
+        ]);
+
+        return response()->json(['entity' => $clientEntity]);
     }
 
     /**

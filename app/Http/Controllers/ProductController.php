@@ -35,69 +35,80 @@ class ProductController extends Controller
         return response()->json(['products' => Product::filter()->get()]);
     }
 
-    public function getConsumedNutritionForDate(Request $request, $id)
+    public function getConsumedNutritionPerDay(Request $request, $id)
     {
-        $date = Carbon::parse($request->query('date'));
+        $startDate = Carbon::parse($request->query('start_date'))->startOfDay();
+        $endDate = Carbon::parse($request->query('end_date'))->endOfDay();
 
-        $consumedProducts = ConsumedProduct::where('user_id', $id)
-            ->whereDate('consumed_at', $date)
-            ->with('product')
-            ->get();
+        $results = [];
 
-        $consumedRecipes = ConsumedRecipe::where('user_id', $id)
-            ->whereDate('consumed_at', $date)
-            ->with('recipe')
-            ->get();
+        $currentDate = $startDate->copy();
+        while ($currentDate->lte($endDate)) {
+            $nextDate = $currentDate->copy()->endOfDay();
 
-        $waterIntake = ConsumedProduct::where('user_id', $id)
-            ->whereDate('consumed_at', $date)
-            ->whereHas('product', function ($query) {
-                $query->where('name', Product::WATER_PRODUCT_NAME);
-            })
-            ->get()
-            ->sum('quantity');
+            $consumedProducts = ConsumedProduct::where('user_id', $id)
+                ->whereBetween('consumed_at', [$currentDate, $nextDate])
+                ->with('product')
+                ->get();
 
-        $totals = [
-            'calories' => 0,
-            'proteins' => 0,
-            'fats' => 0,
-            'carbs' => 0,
-            'fibre' => 0,
-            'water_intake' => $waterIntake,
-        ];
+            $consumedRecipes = ConsumedRecipe::where('user_id', $id)
+                ->whereBetween('consumed_at', [$currentDate, $nextDate])
+                ->with('recipe')
+                ->get();
 
-        foreach ($consumedProducts as $cp) {
-            if ($cp->product) {
-                $multiplier = $cp->quantity / 100;
-                $totals['calories'] += $multiplier * $cp->product->calories;
-                $totals['proteins'] += $multiplier * $cp->product->protein;
-                $totals['fats']     += $multiplier * $cp->product->fat;
-                $totals['carbs']    += $multiplier * $cp->product->carbs;
-                $totals['fibre']    += $multiplier * $cp->product->fibre;
+            $waterIntake = ConsumedProduct::where('user_id', $id)
+                ->whereBetween('consumed_at', [$currentDate, $nextDate])
+                ->whereHas('product', function ($query) {
+                    $query->where('name', Product::WATER_PRODUCT_NAME);
+                })
+                ->sum('quantity');
+
+            $totals = [
+                'date' => $currentDate->toDateString(),
+                'calories' => 0,
+                'proteins' => 0,
+                'fats' => 0,
+                'carbs' => 0,
+                'fibre' => 0,
+                'water_intake' => $waterIntake,
+            ];
+
+            foreach ($consumedProducts as $cp) {
+                if ($cp->product) {
+                    $multiplier = $cp->quantity / 100;
+                    $totals['calories'] += $multiplier * $cp->product->calories;
+                    $totals['proteins'] += $multiplier * $cp->product->protein;
+                    $totals['fats']     += $multiplier * $cp->product->fat;
+                    $totals['carbs']    += $multiplier * $cp->product->carbs;
+                    $totals['fibre']    += $multiplier * $cp->product->fibre;
+                }
             }
-        }
 
-        foreach ($consumedRecipes as $cr) {
-            if ($cr->recipe) {
-                $multiplier = $cr->quantity / 100;
-                $totals['calories'] += $multiplier * $cr->recipe->calories;
-                $totals['proteins'] += $multiplier * $cr->recipe->protein;
-                $totals['fats']     += $multiplier * $cr->recipe->fat;
-                $totals['carbs']    += $multiplier * $cr->recipe->carbs;
-                $totals['fibre']    += $multiplier * $cr->recipe->fibre;
+            foreach ($consumedRecipes as $cr) {
+                if ($cr->recipe) {
+                    $multiplier = $cr->quantity / 100;
+                    $totals['calories'] += $multiplier * $cr->recipe->calories;
+                    $totals['proteins'] += $multiplier * $cr->recipe->protein;
+                    $totals['fats']     += $multiplier * $cr->recipe->fat;
+                    $totals['carbs']    += $multiplier * $cr->recipe->carbs;
+                    $totals['fibre']    += $multiplier * $cr->recipe->fibre;
+                }
             }
+
+            foreach ($totals as $key => $value) {
+                if ($key !== 'date') {
+                    $totals[$key] = round($value);
+                }
+            }
+
+            $results[] = $totals;
+
+            $currentDate->addDay()->startOfDay();
         }
 
-        foreach ($totals as $key => $value) {
-            $totals[$key] = round($value);
-        }
-
-        return response()->json([
-            'date' => $date->toDateString(),
-            'user_id' => $id,
-            'totals' => $totals,
-        ]);
+        return response()->json($results);
     }
+
 
 
     /**

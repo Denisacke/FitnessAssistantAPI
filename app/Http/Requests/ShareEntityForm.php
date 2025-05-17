@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class PerformedWorkoutForm extends FormRequest
+class ShareEntityForm extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,10 +23,10 @@ class PerformedWorkoutForm extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required',
-            'workout_id' => 'required',
-            'exercises' => 'required',
-            'performed_at' => 'sometimes',
+            'entity_id' => 'required',
+            'entity_type' => 'required',
+            'client_id' => 'required',
+            'created_by' => 'required',
         ];
     }
 }

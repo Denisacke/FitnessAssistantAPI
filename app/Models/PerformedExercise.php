@@ -16,12 +16,18 @@ class PerformedExercise extends Model
         'sets',
         'reps',
         'weight',
-        'performed_date'
+        'performed_date',
+        'user_id'
     ];
 
     public function exercise(): BelongsTo
     {
         return $this->belongsTo(Exercise::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function performedWorkout(): BelongsTo

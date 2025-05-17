@@ -38,6 +38,7 @@ class PerformedWorkoutController extends Controller
                 $pivotData = array_map(function ($exercise) use ($validated) {
                     return [
                         'exercise_id' => $exercise['exercise_id'],
+                        'user_id' => $validated['user_id'],
                         'sets' => $exercise['sets'],
                         'reps' => $exercise['reps'],
                         'weight' => $exercise['weight'],

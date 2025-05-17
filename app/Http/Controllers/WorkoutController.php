@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
 use App\Http\Requests\WorkoutForm;
 use App\Models\Workout;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class WorkoutController extends Controller
@@ -77,7 +76,6 @@ class WorkoutController extends Controller
         }
 
     }
-
 
     /**
      * Display the specified resource.

@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConsumedProductController;
 use App\Http\Controllers\ConsumedRecipeController;
 use App\Http\Controllers\ExerciseController;
+use App\Http\Controllers\PerformedExerciseController;
 use App\Http\Controllers\PerformedWorkoutController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RecipeController;
@@ -21,11 +22,20 @@ Route::group(['prefix' => 'exercises'], function () {
 
 Route::group(['prefix' => 'products'], function () {
     Route::post('/scrape', [ProductController::class, 'scrape']);
-    Route::get('/consumed_macros/{id}', [ProductController::class, 'getConsumedNutritionForDate']);
+    Route::get('/consumed_macros/{id}', [ProductController::class, 'getConsumedNutritionPerDay']);
 });
 
 Route::group(['prefix' => 'consumed_products'], function () {
     Route::post('/register_water_intake', [ConsumedProductController::class, 'registerWaterIntake']);
+});
+
+Route::group(['prefix' => 'users'], function () {
+    Route::post('/share', [UserController::class, 'shareEntity']);
+});
+
+Route::group(['prefix' => 'performed_exercises'], function () {
+    Route::get('/{id}', [PerformedExerciseController::class, 'getPerformedExerciseList']);
+    Route::get('/statistics/{user_id}/{exercise_id}', [PerformedExerciseController::class, 'getExerciseStatsForDateRange']);
 });
 
 Route::resource('workouts', WorkoutController::class);
