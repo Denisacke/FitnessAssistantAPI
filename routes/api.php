@@ -22,6 +22,7 @@ Route::group(['prefix' => 'exercises'], function () {
 
 Route::group(['prefix' => 'products'], function () {
     Route::post('/scrape', [ProductController::class, 'scrape']);
+    Route::get('/consumed_foods/{id}', [ProductController::class, 'getConsumedFoodsPerUser']);
     Route::get('/consumed_macros/{id}', [ProductController::class, 'getConsumedNutritionPerDay']);
 });
 
@@ -31,6 +32,7 @@ Route::group(['prefix' => 'consumed_products'], function () {
 
 Route::group(['prefix' => 'users'], function () {
     Route::post('/share', [UserController::class, 'shareEntity']);
+    Route::put('/{id}/set_trainer', [UserController::class, 'setTrainerForUser']);
 });
 
 Route::group(['prefix' => 'performed_exercises'], function () {
@@ -48,7 +50,7 @@ Route::resource('consumed_recipes', ConsumedRecipeController::class);
 Route::resource('users', UserController::class);
 
 Route::post('/login', [AuthController::class, 'login']);
-Route::middleware('auth:api')->post('/logout', [AuthController::class, 'logout']);
+Route::post('/logout', [AuthController::class, 'logout']);
 Route::group(['middleware' => ['auth:api']], function () {
     // Protected routes
 });

@@ -88,15 +88,12 @@ class WorkoutController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(WorkoutForm $request, string $id)
+    public function update(WorkoutForm $request, string $id): JsonResponse
     {
-        Log::info('GOT HEREEEEE');
         $validated = $request->validated();
-        Log::info('updating...');
         try {
             $workout = DB::transaction(function () use ($validated, $id) {
                 $workout = Workout::find($id);
-                Log::info('got to workout');
                 $pivotData = [];
                 foreach ($validated['exercises'] as $exercise) {
                     $pivotData[$exercise['exercise_id']] = [

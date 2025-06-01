@@ -35,6 +35,47 @@ class ProductController extends Controller
         return response()->json(['products' => Product::filter()->get()]);
     }
 
+    public function getConsumedFoodsPerUser($id): JsonResponse
+    {
+        $consumedProducts = ConsumedProduct::where('user_id', $id)
+            ->with('product')
+            ->whereDoesntHave('product', function ($query) {
+                $query->where('name', Product::WATER_PRODUCT_NAME);
+            })
+            ->orderBy('consumed_at', 'DESC')
+            ->get();
+
+        $consumedRecipes = ConsumedRecipe::where('user_id', $id)
+            ->with('recipe')
+            ->orderBy('consumed_at', 'DESC')
+            ->get();
+
+        foreach ($consumedProducts as $cp) {
+            if ($cp->product) {
+                $multiplier = $cp->quantity / 100;
+                $cp['calories'] = round($multiplier * $cp->product->calories);
+                $cp['proteins'] = round($multiplier * $cp->product->protein);
+                $cp['fats']     = round($multiplier * $cp->product->fat);
+                $cp['carbs']    = round($multiplier * $cp->product->carbs);
+                $cp['fibre']    = round($multiplier * $cp->product->fibre);
+                $cp['name']     = $cp->product->name;
+            }
+        }
+
+        foreach ($consumedRecipes as $cr) {
+            if ($cr->recipe) {
+                $multiplier = $cr->quantity / 100;
+                $cr['calories'] = round($multiplier * $cr->recipe->calories);
+                $cr['proteins'] = round($multiplier * $cr->recipe->protein);
+                $cr['fats']     = round($multiplier * $cr->recipe->fat);
+                $cr['carbs']    = round($multiplier * $cr->recipe->carbs);
+                $cr['fibre']    = round($multiplier * $cr->recipe->fibre);
+                $cr['name']     = $cr->recipe->name;
+            }
+        }
+
+        return response()->json(['foods' => [...$consumedProducts, ...$consumedRecipes]]);
+    }
     public function getConsumedNutritionPerDay(Request $request, $id)
     {
         $startDate = Carbon::parse($request->query('start_date'))->startOfDay();

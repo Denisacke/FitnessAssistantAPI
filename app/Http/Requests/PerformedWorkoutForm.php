@@ -26,7 +26,7 @@ class PerformedWorkoutForm extends FormRequest
             'user_id' => 'required',
             'workout_id' => 'required',
             'exercises' => 'required',
-            'performed_at' => 'sometimes',
+            'performed_date' => 'sometimes',
         ];
     }
 }

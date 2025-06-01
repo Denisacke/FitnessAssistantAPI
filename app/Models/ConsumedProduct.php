@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use eloquentFilter\QueryFilter\ModelFilters\Filterable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ConsumedProduct extends Model
 {
+    use Filterable;
+    private static array $whiteListFilter = ['*'];
+
     protected $fillable = [
         'product_id', 'user_id', 'quantity', 'consumed_at'
     ];

@@ -16,7 +16,7 @@ class ConsumedProductController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(['products' => ConsumedProduct::filter()->with('product')->get()]);
     }
 
     /**

@@ -10,7 +10,7 @@ class EntityAssignment extends Model
     protected $fillable = [
         'entity_id',
         'entity_type',
-        'assigned_by',
-        'assigned_to',
+        'trainer_id',
+        'client_id',
     ];
 }
