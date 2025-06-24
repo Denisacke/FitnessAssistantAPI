@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\WorkoutForm;
+use App\Models\EntityAssignment;
 use App\Models\Workout;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class WorkoutController extends Controller
 {
@@ -124,8 +124,20 @@ class WorkoutController extends Controller
      */
     public function destroy(string $id)
     {
-        $workout = Workout::findOrFail($id);
-        $workout->delete();
+        try {
+            $workout = Workout::findOrFail($id);
+            $workout->delete();
+
+            EntityAssignment::where('entity_type', Workout::class)
+                ->where('entity_id', $id)
+                ->delete();
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Something went wrong while attempting to delete the workout.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
 
         return ['success' => true];
     }

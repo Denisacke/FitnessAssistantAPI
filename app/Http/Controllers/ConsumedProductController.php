@@ -6,6 +6,7 @@ use App\Http\Requests\ConsumedProductForm;
 use App\Models\ConsumedProduct;
 use App\Models\Product;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -37,16 +38,23 @@ class ConsumedProductController extends Controller
     {
         $userId = $request->get('user_id');
         $quantity = $request->get('quantity');
-        $waterProduct = Product::where('name', '=', Product::WATER_PRODUCT_NAME)->first();
+        try {
+            $waterProduct = Product::where('name', '=', Product::WATER_PRODUCT_NAME)->first();
 
-        ConsumedProduct::create([
-            'user_id' => $userId,
-            'product_id' => $waterProduct->id,
-            'quantity' => $quantity,
-            'consumed_at' => Carbon::now(),
-        ]);
+            ConsumedProduct::create([
+                'user_id' => $userId,
+                'product_id' => $waterProduct->id,
+                'quantity' => $quantity,
+                'consumed_at' => Carbon::now(),
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
 
-        return ['success' => true];
+
+        return response()->json(['success' => true]);
     }
 
     /**

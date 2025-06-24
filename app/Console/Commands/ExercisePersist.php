@@ -59,10 +59,17 @@ class ExercisePersist extends Command
             unset($item['target']);
             unset($item['equipment']);
             unset($item['secondaryMuscles']);
+            unset($item['difficulty']);
+            unset($item['description']);
+            unset($item['category']);
 
             return $item;
         }, json_decode($response->getBody(), true));
 
-        Exercise::insert($responseArray);
+        Exercise::upsert(
+            $responseArray,
+            ['name'],
+            ['body_part', 'gif_url', 'muscle_target', 'instructions', 'updated_at']
+        );
     }
 }

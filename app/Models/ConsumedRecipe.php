@@ -8,7 +8,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ConsumedRecipe extends Model
 {
     protected $fillable = [
-        'recipe_id', 'user_id', 'quantity', 'consumed_at'
+        'recipe_id',
+        'user_id',
+        'quantity',
+        'consumed_at',
+        'calories',
+        'name',
+        'fat',
+        'protein',
+        'carbs',
+        'fibre',
     ];
 
     public function recipe(): BelongsTo

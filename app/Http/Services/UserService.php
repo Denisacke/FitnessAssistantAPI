@@ -5,6 +5,7 @@ namespace App\Http\Services;
 use App\Http\Enums\ActivityLevel;
 use App\Http\Enums\Sex;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class UserService
@@ -40,10 +41,11 @@ class UserService
     public static function calculateRecommendedCalories(User $user): float
     {
         $bmr = 0;
+        $userAge = Carbon::parse($user->birthDate)->age;
         if ($user->sex === Sex::MALE) {
-            $bmr = 88.362 + (13.397 * $user->weight) + (4.799 * $user->height) - (5.677 * $user->age);
+            $bmr = 88.362 + (13.397 * $user->weight) + (4.799 * $user->height) - (5.677 * $userAge);
         } elseif ($user->sex === Sex::FEMALE) {
-            $bmr = 447.593 + (9.247 * $user->weight) + (3.098 * $user->height) - (4.330 * $user->age);
+            $bmr = 447.593 + (9.247 * $user->weight) + (3.098 * $user->height) - (4.330 * $userAge);
         }
 
         $activityMultipliers = [

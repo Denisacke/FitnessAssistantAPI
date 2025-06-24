@@ -14,7 +14,7 @@ class Statistic extends Model
         'date',
         'water_intake',
         'calorie_intake',
-        'proteins',
+        'protein',
         'fibre',
         'carbs',
         'consumed_calories',

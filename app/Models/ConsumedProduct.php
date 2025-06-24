@@ -12,7 +12,16 @@ class ConsumedProduct extends Model
     private static array $whiteListFilter = ['*'];
 
     protected $fillable = [
-        'product_id', 'user_id', 'quantity', 'consumed_at'
+        'product_id',
+        'user_id',
+        'quantity',
+        'consumed_at',
+        'calories',
+        'name',
+        'fat',
+        'protein',
+        'carbs',
+        'fibre',
     ];
 
     public function product(): BelongsTo

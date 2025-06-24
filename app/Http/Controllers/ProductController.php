@@ -9,7 +9,6 @@ use App\Models\Product;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use PHPUnit\Exception;
 
 class ProductController extends Controller
@@ -51,31 +50,58 @@ class ProductController extends Controller
             ->get();
 
         foreach ($consumedProducts as $cp) {
-            if ($cp->product) {
+            if (is_null($cp->product_name)) {
                 $multiplier = $cp->quantity / 100;
                 $cp['calories'] = round($multiplier * $cp->product->calories);
-                $cp['proteins'] = round($multiplier * $cp->product->protein);
-                $cp['fats']     = round($multiplier * $cp->product->fat);
-                $cp['carbs']    = round($multiplier * $cp->product->carbs);
-                $cp['fibre']    = round($multiplier * $cp->product->fibre);
-                $cp['name']     = $cp->product->name;
+                $cp['protein'] = round($multiplier * $cp->product->protein);
+                $cp['fats'] = round($multiplier * $cp->product->fat);
+                $cp['carbs'] = round($multiplier * $cp->product->carbs);
+                $cp['fibre'] = round($multiplier * $cp->product->fibre);
+                $cp['name'] = $cp->product->name;
+
+                $cp->update([
+                    'calories' => round($multiplier * $cp->product->calories),
+                    'protein' => round($multiplier * $cp->product->protein),
+                    'fats' => round($multiplier * $cp->product->fat),
+                    'carbs' => round($multiplier * $cp->product->carbs),
+                    'fibre' => round($multiplier * $cp->product->fibre),
+                    'name' => $cp->product->name
+                ]);
             }
         }
 
         foreach ($consumedRecipes as $cr) {
-            if ($cr->recipe) {
+            if (is_null($cr->recipe_name)) {
                 $multiplier = $cr->quantity / 100;
                 $cr['calories'] = round($multiplier * $cr->recipe->calories);
-                $cr['proteins'] = round($multiplier * $cr->recipe->protein);
-                $cr['fats']     = round($multiplier * $cr->recipe->fat);
-                $cr['carbs']    = round($multiplier * $cr->recipe->carbs);
-                $cr['fibre']    = round($multiplier * $cr->recipe->fibre);
-                $cr['name']     = $cr->recipe->name;
+                $cr['protein'] = round($multiplier * $cr->recipe->protein);
+                $cr['fats'] = round($multiplier * $cr->recipe->fat);
+                $cr['carbs'] = round($multiplier * $cr->recipe->carbs);
+                $cr['fibre'] = round($multiplier * $cr->recipe->fibre);
+                $cr['name'] = $cr->recipe->name;
+
+                $cr->update([
+                    'calories' => round($multiplier * $cr->recipe->calories),
+                    'protein' => round($multiplier * $cr->recipe->protein),
+                    'fats' => round($multiplier * $cr->recipe->fat),
+                    'carbs' => round($multiplier * $cr->recipe->carbs),
+                    'fibre' => round($multiplier * $cr->recipe->fibre),
+                    'name' => $cr->recipe->name,
+                ]);
             }
         }
 
         return response()->json(['foods' => [...$consumedProducts, ...$consumedRecipes]]);
     }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
     public function getConsumedNutritionPerDay(Request $request, $id)
     {
         $startDate = Carbon::parse($request->query('start_date'))->startOfDay();
@@ -107,7 +133,7 @@ class ProductController extends Controller
             $totals = [
                 'date' => $currentDate->toDateString(),
                 'calories' => 0,
-                'proteins' => 0,
+                'protein' => 0,
                 'fats' => 0,
                 'carbs' => 0,
                 'fibre' => 0,
@@ -118,10 +144,26 @@ class ProductController extends Controller
                 if ($cp->product) {
                     $multiplier = $cp->quantity / 100;
                     $totals['calories'] += $multiplier * $cp->product->calories;
-                    $totals['proteins'] += $multiplier * $cp->product->protein;
-                    $totals['fats']     += $multiplier * $cp->product->fat;
-                    $totals['carbs']    += $multiplier * $cp->product->carbs;
-                    $totals['fibre']    += $multiplier * $cp->product->fibre;
+                    $totals['protein'] += $multiplier * $cp->product->protein;
+                    $totals['fats'] += $multiplier * $cp->product->fat;
+                    $totals['carbs'] += $multiplier * $cp->product->carbs;
+                    $totals['fibre'] += $multiplier * $cp->product->fibre;
+
+                    $cp->update([
+                        'calories' => round($multiplier * $cp->product->calories),
+                        'protein' => round($multiplier * $cp->product->protein),
+                        'fats' => round($multiplier * $cp->product->fat),
+                        'carbs' => round($multiplier * $cp->product->carbs),
+                        'fibre' => round($multiplier * $cp->product->fibre),
+                        'name' => $cp->product->name
+                    ]);
+                } else {
+                    $multiplier = $cp->quantity / 100;
+                    $totals['calories'] += $multiplier * $cp->calories;
+                    $totals['protein'] += $multiplier * $cp->protein;
+                    $totals['fats'] += $multiplier * $cp->fat;
+                    $totals['carbs'] += $multiplier * $cp->carbs;
+                    $totals['fibre'] += $multiplier * $cp->fibre;
                 }
             }
 
@@ -129,10 +171,26 @@ class ProductController extends Controller
                 if ($cr->recipe) {
                     $multiplier = $cr->quantity / 100;
                     $totals['calories'] += $multiplier * $cr->recipe->calories;
-                    $totals['proteins'] += $multiplier * $cr->recipe->protein;
-                    $totals['fats']     += $multiplier * $cr->recipe->fat;
-                    $totals['carbs']    += $multiplier * $cr->recipe->carbs;
-                    $totals['fibre']    += $multiplier * $cr->recipe->fibre;
+                    $totals['protein'] += $multiplier * $cr->recipe->protein;
+                    $totals['fats'] += $multiplier * $cr->recipe->fat;
+                    $totals['carbs'] += $multiplier * $cr->recipe->carbs;
+                    $totals['fibre'] += $multiplier * $cr->recipe->fibre;
+
+                    $cr->update([
+                        'calories' => round($multiplier * $cr->recipe->calories),
+                        'protein' => round($multiplier * $cr->recipe->protein),
+                        'fats' => round($multiplier * $cr->recipe->fat),
+                        'carbs' => round($multiplier * $cr->recipe->carbs),
+                        'fibre' => round($multiplier * $cr->recipe->fibre),
+                        'name' => $cr->recipe->name,
+                    ]);
+                } else {
+                    $multiplier = $cr->quantity / 100;
+                    $totals['calories'] += $multiplier * $cr->calories;
+                    $totals['protein'] += $multiplier * $cr->protein;
+                    $totals['fats'] += $multiplier * $cr->fat;
+                    $totals['carbs'] += $multiplier * $cr->carbs;
+                    $totals['fibre'] += $multiplier * $cr->fibre;
                 }
             }
 
@@ -149,8 +207,6 @@ class ProductController extends Controller
 
         return response()->json($results);
     }
-
-
 
     /**
      * Show the form for creating a new resource.
@@ -180,14 +236,6 @@ class ProductController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
     {
         //
     }

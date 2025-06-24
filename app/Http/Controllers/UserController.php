@@ -44,6 +44,7 @@ class UserController extends Controller
         $user->recommended_calories = UserService::calculateRecommendedCalories($user);
         $user->bmi = UserService::computeBMI($user->weight, $user->height);
 
+        Log::debug(json_encode($user));
 
         $user->save();
         return response()->json(['success' => true]);
@@ -165,6 +166,8 @@ class UserController extends Controller
         $userData->recommended_calories = UserService::calculateRecommendedCalories($userData);
         $userData->bmi = UserService::computeBMI($userData->weight, $userData->height);
 
+        Log::debug('USER DATA');
+        Log::debug(json_encode($userData));
         $user = User::find($id);
         $user->update([
             ...$userData->toArray()

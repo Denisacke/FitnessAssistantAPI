@@ -32,6 +32,7 @@ class User extends Authenticatable implements JWTSubject
         'role',
         'recommended_calories',
         'recommended_water_intake',
+        'birth_date',
         'trainer_id',
     ];
 
